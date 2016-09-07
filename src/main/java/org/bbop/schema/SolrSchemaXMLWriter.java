@@ -168,7 +168,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
 
     xml.writeStartElement("schema");
     xml.writeAttribute("name", "golr");
-    xml.writeAttribute("version", "6.1");
+    xml.writeAttribute("version", "6.2");
 
     xml.writeStartElement("types");
 

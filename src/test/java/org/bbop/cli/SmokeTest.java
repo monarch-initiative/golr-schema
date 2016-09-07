@@ -11,6 +11,7 @@ public class SmokeTest {
 
   private final String obanConfig = this.getClass().getResource("/oban-config.yaml").getFile();
   private final String ontologyConfig = this.getClass().getResource("/ont-config.yaml").getFile();
+  private final String monarchSearchConfig = this.getClass().getResource("/monarch-search-config.yaml").getFile();
 
   @Test
   public void generateSchemaForOban() throws IOException {
@@ -24,6 +25,14 @@ public class SmokeTest {
   public void generateSchemaForOntology() throws IOException {
     List<String> conf = new ArrayList<String>();
     conf.add(ontologyConfig);
+    SolrSchemaGenerator solrSchemaGenerator = new SolrSchemaGenerator(conf, Optional.empty());
+    solrSchemaGenerator.generate();
+  }
+
+  @Test
+  public void generateSchemaForMonarchSearch() throws IOException {
+    List<String> conf = new ArrayList<String>();
+    conf.add(monarchSearchConfig);
     SolrSchemaGenerator solrSchemaGenerator = new SolrSchemaGenerator(conf, Optional.empty());
     solrSchemaGenerator.generate();
   }
