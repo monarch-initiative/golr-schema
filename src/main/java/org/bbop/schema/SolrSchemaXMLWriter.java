@@ -209,6 +209,9 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeStartElement("tokenizer");
     xml.writeAttribute("class", "solr.StandardTokenizerFactory");
     xml.writeEndElement(); // </tokenizer>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeEndElement(); // </fieldType>
 
