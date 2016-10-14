@@ -192,6 +192,11 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("sortMissingLast", "true");
     xml.writeStartElement("analyzer");
     xml.writeAttribute("type", "index");
+    xml.writeStartElement("charFilter");
+    xml.writeAttribute("class", "solr.PatternReplaceCharFilterFactory");
+    xml.writeAttribute("pattern", "_");
+    xml.writeAttribute("replacement", " ");
+    xml.writeEndElement(); // </charFilter>
     xml.writeStartElement("tokenizer");
     xml.writeAttribute("class", "solr.StandardTokenizerFactory");
     xml.writeEndElement(); // </tokenizer>
@@ -206,6 +211,11 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeEndElement(); // </analyzer>
     xml.writeStartElement("analyzer");
     xml.writeAttribute("type", "query");
+    xml.writeStartElement("charFilter");
+    xml.writeAttribute("class", "solr.PatternReplaceCharFilterFactory");
+    xml.writeAttribute("pattern", "_");
+    xml.writeAttribute("replacement", " ");
+    xml.writeEndElement(); // </charFilter>
     xml.writeStartElement("tokenizer");
     xml.writeAttribute("class", "solr.StandardTokenizerFactory");
     xml.writeEndElement(); // </tokenizer>
