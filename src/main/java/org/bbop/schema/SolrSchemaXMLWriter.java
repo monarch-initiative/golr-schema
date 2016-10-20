@@ -151,6 +151,15 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
   /**
    * Dump the necessary Solr schema as a String.
    * 
+   * Important note on EdgeNGram max value: The EdgeNGram filter does not include the whole word,
+   * but only the bits. Therefore querying for a long whole world might not match if its length is
+   * bigger than the max EdgeNGram value. We decided to increase the max value of the EdgeNGram with
+   * the down-side to have larger data. We did experiment other solutions: 1. Use another field to
+   * store only EdgeNGram bits. This required changes in the clients library, increasing the max
+   * value was easier. 2. User another field with the EdgeNGram analyzer, and copy the bits into the
+   * searchable field. This does not work as copyfield copies only the content, and not the index.
+   * Also note that copyfield cannot be chained.
+   * 
    * @return schema
    * @throws XMLStreamException
    */
@@ -206,7 +215,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.EdgeNGramFilterFactory");
     xml.writeAttribute("minGramSize", "3");
-    xml.writeAttribute("maxGramSize", "15");
+    xml.writeAttribute("maxGramSize", "50"); // See method's note
     xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeStartElement("analyzer");
@@ -248,13 +257,13 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("sortMissingLast", "true");
     xml.writeAttribute("multiValued", "true");
     xml.writeEndElement(); // </fieldType>
-    
+
     // long
     xml.writeStartElement("fieldType");
     xml.writeAttribute("name", "long");
     xml.writeAttribute("class", "solr.TrieLongField");
     xml.writeEndElement(); // </fieldType>
-    
+
     // TODO check arguments, I copy/pasted that from Stackoverflow
     // tdates
     xml.writeStartElement("fieldType");
