@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/berkeleybop/golr-schema.svg?branch=master)](https://travis-ci.org/berkeleybop/golr-schema)
+
 # golr-schema
 Utility to generate a schema.xml from a yaml config file.
 
