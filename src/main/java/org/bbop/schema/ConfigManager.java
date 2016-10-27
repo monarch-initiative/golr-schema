@@ -39,8 +39,13 @@ public class ConfigManager {
     // Ensure presence of item; only take the first one.
     if (!unique_fields.containsKey(field.id)) {
       unique_fields.put(field.id, field);
+    } else {
+      // check if defined fields are equivalent
+      if (!unique_fields.get(field.id).equals(field)) {
+        throw new IllegalStateException(field.id + " is defined twice with different properties.\n"
+            + unique_fields.get(field.id) + "\n" + field);
+      }
     }
-
     // Ensure presence of comments (description) list.
     if (!collected_comments.containsKey(field.id)) {
       collected_comments.put(field.id, new ArrayList<String>());

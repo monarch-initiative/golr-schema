@@ -1,0 +1,16 @@
+id: second
+schema_generating: true
+description: First.
+display_name: First
+document_category: second_class
+weight: 40
+boost_weights: my_field^1.0
+result_weights: my_field^1.0
+filter_weights: my_field^1.0
+
+fields:
+  - id: myfield
+    description: My field.
+    display_name: my_field
+    type: string
+    property: []

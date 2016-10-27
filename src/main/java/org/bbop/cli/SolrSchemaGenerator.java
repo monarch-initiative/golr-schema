@@ -1,11 +1,13 @@
 package org.bbop.cli;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +17,10 @@ import org.apache.log4j.Logger;
 import org.bbop.schema.ConfigManager;
 import org.bbop.schema.SolrSchemaXMLWriter;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
 public class SolrSchemaGenerator {
 
   private static final Logger LOGGER = Logger.getLogger(SolrSchemaGenerator.class);
@@ -23,7 +29,7 @@ public class SolrSchemaGenerator {
   final private Optional<String> outputPath;
 
   public SolrSchemaGenerator(List<String> configPath, Optional<String> outputPath) {
-    this.configPath = configPath;
+    this.configPath = readFolders(configPath);
     this.outputPath = outputPath;
   }
 
@@ -70,6 +76,36 @@ public class SolrSchemaGenerator {
       }
     }
     return configManger;
+  }
+
+  private List<String> readFolders(List<String> configPath) {
+    while (configPath.stream().map(path -> new File(path).isDirectory())
+        .reduce(false, (a, b) -> a || b)) {
+      // filter out directories to list them
+      List<String> directories = new ArrayList<String>();
+      List<String> configsExpanded =
+          Lists.newArrayList(Iterables.filter(configPath, new Predicate<String>() {
+            public boolean apply(String s) {
+              if (new File(s).isDirectory()) {
+                directories.add(s);
+                return false;
+              } else {
+                return true;
+              }
+            }
+          }));
+
+      // adding the directory files
+      for (String directory : directories) {
+        File d = new File(directory);
+        for (File f : d.listFiles()) {
+          configsExpanded.add(f.getAbsolutePath());
+        }
+      }
+      configPath = configsExpanded;
+    }
+
+    return configPath;
   }
 
 }

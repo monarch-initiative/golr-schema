@@ -11,7 +11,11 @@ public class SmokeTest {
 
   private final String obanConfig = this.getClass().getResource("/oban-config.yaml").getFile();
   private final String ontologyConfig = this.getClass().getResource("/ont-config.yaml").getFile();
-  private final String monarchSearchConfig = this.getClass().getResource("/monarch-search-config.yaml").getFile();
+  private final String monarchSearchConfig = this.getClass()
+      .getResource("/monarch-search-config.yaml").getFile();
+  private final String invalidFolderConfig = this.getClass().getResource("/multiple_invalid")
+      .getFile();
+  private final String validFolderConfig = this.getClass().getResource("/multiple_valid").getFile();
 
   @Test
   public void generateSchemaForOban() throws IOException {
@@ -33,6 +37,22 @@ public class SmokeTest {
   public void generateSchemaForMonarchSearch() throws IOException {
     List<String> conf = new ArrayList<String>();
     conf.add(monarchSearchConfig);
+    SolrSchemaGenerator solrSchemaGenerator = new SolrSchemaGenerator(conf, Optional.empty());
+    solrSchemaGenerator.generate();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void throwExceptionOnInconsistentFields() throws IOException {
+    List<String> conf = new ArrayList<String>();
+    conf.add(invalidFolderConfig);
+    SolrSchemaGenerator solrSchemaGenerator = new SolrSchemaGenerator(conf, Optional.empty());
+    solrSchemaGenerator.generate();
+  }
+
+  @Test
+  public void generateSchemaForFolder() throws IOException {
+    List<String> conf = new ArrayList<String>();
+    conf.add(validFolderConfig);
     SolrSchemaGenerator solrSchemaGenerator = new SolrSchemaGenerator(conf, Optional.empty());
     solrSchemaGenerator.generate();
   }

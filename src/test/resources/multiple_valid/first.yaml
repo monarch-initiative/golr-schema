@@ -1,0 +1,22 @@
+id: first
+schema_generating: true
+description: First.
+display_name: First
+document_category: first_class
+weight: 40
+boost_weights: my_field^1.0
+result_weights: my_field^1.0
+filter_weights: my_field^1.0
+
+fields:
+  - id: myfield
+    description: My field.
+    display_name: my_field
+    type: string
+    property: []
+    searchable: true
+  - id: id
+    description: Family ID.
+    display_name: Acc
+    type: string
+    property: []

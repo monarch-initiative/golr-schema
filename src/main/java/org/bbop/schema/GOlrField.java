@@ -38,4 +38,35 @@ public class GOlrField {
     // There are no default transformations to make.
     transform = new ArrayList<String>();
   }
+
+  @Override
+  public String toString() {
+    return "id - " + this.id + " (schema)\n" + "description - " + this.description + "\n"
+        + "display_name - " + this.display_name + "\n" + "type - " + this.type + " (schema)\n"
+        + "required - " + this.required + " (schema)\n" + "property - " + this.property + "\n"
+        + "cardinality - " + this.cardinality + " (schema)\n" + "property_config - "
+        + this.property_config + "\n" + "boost_weights - " + this.boost_weights + "\n"
+        + "result_weights - " + this.result_weights + "\n" + "filter_weights - "
+        + this.filter_weights + "\n" + "searchable - " + this.searchable + " (schema)\n"
+        + "indexed - " + this.indexed + " (schema)\n" + "transform - " + this.transform + "\n";
+  }
+
+  /*
+   * Only the fields which are used to generate the schema.xml are checked
+   */
+  @Override
+  public boolean equals(Object other) {
+    if (other == null)
+      return false;
+    if (other == this)
+      return true;
+    if (!(other instanceof GOlrField))
+      return false;
+    GOlrField otherGOlrField = (GOlrField) other;
+    return this.id.equals(otherGOlrField.id) && this.type.equals(otherGOlrField.type)
+        && this.required.equals(otherGOlrField.required)
+        && this.cardinality.equals(otherGOlrField.cardinality)
+        && this.searchable.equals(otherGOlrField.searchable)
+        && this.indexed.equals(otherGOlrField.indexed);
+  }
 }
