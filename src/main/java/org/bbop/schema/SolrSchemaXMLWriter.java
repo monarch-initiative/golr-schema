@@ -250,6 +250,10 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
     xml.writeEndElement(); // </filter>
     xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.EdgeNGramFilterFactory");
     xml.writeAttribute("minGramSize", "3");
     xml.writeAttribute("maxGramSize", "15");
@@ -267,6 +271,10 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
     xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeEndElement(); // </fieldType>
@@ -290,6 +298,10 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
     xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeStartElement("analyzer");
     xml.writeAttribute("type", "query");
@@ -303,6 +315,10 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
     xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeEndElement(); // </fieldType>
@@ -321,6 +337,10 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
     xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeStartElement("analyzer");
     xml.writeAttribute("type", "query");
@@ -329,6 +349,10 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
     xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeEndElement(); // </fieldType>
