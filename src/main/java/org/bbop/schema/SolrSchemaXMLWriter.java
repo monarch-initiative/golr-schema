@@ -120,13 +120,15 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
       if (f_searchable.equals("true")) {
 
         // String munged_id = f_id + config.getSearchableExtension();
-        String munged_id = f_id + "_searchable";
+        String std_id = f_id + "_std";
+        String eng_id = f_id + "_eng";
+        String kw_id = f_id + "_kw";
 
-        xml.writeComment("An easily searchable (TextField tokenized) version of " + f_id + ".");
+        xml.writeComment("A StandardTokenized version of " + f_id + ".");
         xml.writeStartElement("field");
         // The main variants.
-        xml.writeAttribute("name", munged_id);
-        xml.writeAttribute("type", "text_searchable");
+        xml.writeAttribute("name", std_id);
+        xml.writeAttribute("type", "text_std");
         xml.writeAttribute("required", f_required);
         xml.writeAttribute("multiValued", f_multi);
         // Invariants: we'll always store and index.
@@ -135,11 +137,46 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
         // Done.
         xml.writeEndElement(); // </field>
 
-        // Also, add the field copy soe we don't have to worry about manually loading it.
+        xml.writeComment("A EdgeNGram version of " + f_id + ".");
+        xml.writeStartElement("field");
+        // The main variants.
+        xml.writeAttribute("name", eng_id);
+        xml.writeAttribute("type", "text_eng");
+        xml.writeAttribute("required", f_required);
+        xml.writeAttribute("multiValued", f_multi);
+        // Invariants: we'll always store and index.
+        xml.writeAttribute("indexed", "true");
+        xml.writeAttribute("stored", "true");
+        // Done.
+        xml.writeEndElement(); // </field>
+
+        xml.writeComment("A Keyword version of " + f_id + ".");
+        xml.writeStartElement("field");
+        // The main variants.
+        xml.writeAttribute("name", kw_id);
+        xml.writeAttribute("type", "text_kw");
+        xml.writeAttribute("required", f_required);
+        xml.writeAttribute("multiValued", f_multi);
+        // Invariants: we'll always store and index.
+        xml.writeAttribute("indexed", "true");
+        xml.writeAttribute("stored", "true");
+        // Done.
+        xml.writeEndElement(); // </field>
+
+        // Also, add the field copy so we don't have to worry about manually loading it.
         xml.writeStartElement("copyField");
-        // <copyField source="body" dest="teaser" maxChars="300"/>
         xml.writeAttribute("source", f_id);
-        xml.writeAttribute("dest", munged_id);
+        xml.writeAttribute("dest", std_id);
+        xml.writeEndElement(); // </copyField>
+        
+        xml.writeStartElement("copyField");
+        xml.writeAttribute("source", f_id);
+        xml.writeAttribute("dest", eng_id);
+        xml.writeEndElement(); // </copyField>
+        
+        xml.writeStartElement("copyField");
+        xml.writeAttribute("source", f_id);
+        xml.writeAttribute("dest", kw_id);
         xml.writeEndElement(); // </copyField>
       }
 
@@ -153,12 +190,11 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
    * 
    * Important note on EdgeNGram max value: The EdgeNGram filter does not include the whole word,
    * but only the bits. Therefore querying for a long whole world might not match if its length is
-   * bigger than the max EdgeNGram value. We decided to increase the max value of the EdgeNGram with
-   * the down-side to have larger data. We did experiment other solutions: 1. Use another field to
-   * store only EdgeNGram bits. This required changes in the clients library, increasing the max
-   * value was easier. 2. User another field with the EdgeNGram analyzer, and copy the bits into the
-   * searchable field. This does not work as copyfield copies only the content, and not the index.
-   * Also note that copyfield cannot be chained.
+   * bigger than the max EdgeNGram value. We decided to have several fields with different
+   * tokenizers. That's a pretty standard way of doing it. We did experiment other solutions: Use
+   * another field with the EdgeNGram analyzer, and copy the bits into the searchable field. This
+   * does not work as copyfield copies only the content, and not the index. Also note that copyfield
+   * cannot be chained.
    * 
    * @return schema
    * @throws XMLStreamException
@@ -194,8 +230,9 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeComment("Any string with spaces that needs to be treated for searching purposes.");
     xml.writeComment("This will be automatically used in cases where \"searchable: true\" has been");
     xml.writeComment("specified in the YAML.");
+    // EdgeNGram
     xml.writeStartElement("fieldType");
-    xml.writeAttribute("name", "text_searchable");
+    xml.writeAttribute("name", "text_eng");
     xml.writeAttribute("class", "solr.TextField");
     xml.writeAttribute("positionIncrementGap", "100");
     xml.writeAttribute("sortMissingLast", "true");
@@ -213,9 +250,13 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
     xml.writeEndElement(); // </filter>
     xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.EdgeNGramFilterFactory");
     xml.writeAttribute("minGramSize", "3");
-    xml.writeAttribute("maxGramSize", "50"); // See method's note
+    xml.writeAttribute("maxGramSize", "15");
     xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeStartElement("analyzer");
@@ -230,6 +271,88 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
+    xml.writeEndElement(); // </analyzer>
+    xml.writeEndElement(); // </fieldType>
+    
+    // StandardTokenizer
+    xml.writeStartElement("fieldType");
+    xml.writeAttribute("name", "text_std");
+    xml.writeAttribute("class", "solr.TextField");
+    xml.writeAttribute("positionIncrementGap", "100");
+    xml.writeAttribute("sortMissingLast", "true");
+    xml.writeStartElement("analyzer");
+    xml.writeAttribute("type", "index");
+    xml.writeStartElement("charFilter");
+    xml.writeAttribute("class", "solr.PatternReplaceCharFilterFactory");
+    xml.writeAttribute("pattern", "_");
+    xml.writeAttribute("replacement", " ");
+    xml.writeEndElement(); // </charFilter>
+    xml.writeStartElement("tokenizer");
+    xml.writeAttribute("class", "solr.StandardTokenizerFactory");
+    xml.writeEndElement(); // </tokenizer>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
+    xml.writeEndElement(); // </analyzer>
+    xml.writeStartElement("analyzer");
+    xml.writeAttribute("type", "query");
+    xml.writeStartElement("charFilter");
+    xml.writeAttribute("class", "solr.PatternReplaceCharFilterFactory");
+    xml.writeAttribute("pattern", "_");
+    xml.writeAttribute("replacement", " ");
+    xml.writeEndElement(); // </charFilter>
+    xml.writeStartElement("tokenizer");
+    xml.writeAttribute("class", "solr.StandardTokenizerFactory");
+    xml.writeEndElement(); // </tokenizer>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
+    xml.writeEndElement(); // </analyzer>
+    xml.writeEndElement(); // </fieldType>
+    
+    // KeywordTokenizer
+    xml.writeStartElement("fieldType");
+    xml.writeAttribute("name", "text_kw");
+    xml.writeAttribute("class", "solr.TextField");
+    xml.writeAttribute("positionIncrementGap", "100");
+    xml.writeAttribute("sortMissingLast", "true");
+    xml.writeStartElement("analyzer");
+    xml.writeAttribute("type", "index");
+    xml.writeStartElement("tokenizer");
+    xml.writeAttribute("class", "solr.KeywordTokenizerFactory");
+    xml.writeEndElement(); // </tokenizer>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
+    xml.writeEndElement(); // </filter>
+    xml.writeEndElement(); // </analyzer>
+    xml.writeStartElement("analyzer");
+    xml.writeAttribute("type", "query");
+    xml.writeStartElement("tokenizer");
+    xml.writeAttribute("class", "solr.KeywordTokenizerFactory");
+    xml.writeEndElement(); // </tokenizer>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
+    xml.writeEndElement(); // </filter>
+    xml.writeStartElement("filter");
+    xml.writeAttribute("class", "solr.StopFilterFactory");
+    xml.writeAttribute("words", "stopwords.txt");
     xml.writeEndElement(); // </filter>
     xml.writeEndElement(); // </analyzer>
     xml.writeEndElement(); // </fieldType>
