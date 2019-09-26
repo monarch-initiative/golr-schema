@@ -124,7 +124,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
         String eng_id = f_id + "_eng";
         String kw_id = f_id + "_kw";
 
-        xml.writeComment("A StandardTokenized version of " + f_id + ".");
+        xml.writeComment("A ClassicTokenized version of " + f_id + ".");
         xml.writeStartElement("field");
         // The main variants.
         xml.writeAttribute("name", std_id);
@@ -244,7 +244,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("replacement", " ");
     xml.writeEndElement(); // </charFilter>
     xml.writeStartElement("tokenizer");
-    xml.writeAttribute("class", "solr.StandardTokenizerFactory");
+    xml.writeAttribute("class", "solr.ClassicTokenizerFactory");
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
@@ -263,7 +263,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("replacement", " ");
     xml.writeEndElement(); // </charFilter>
     xml.writeStartElement("tokenizer");
-    xml.writeAttribute("class", "solr.StandardTokenizerFactory");
+    xml.writeAttribute("class", "solr.ClassicTokenizerFactory");
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
@@ -271,7 +271,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeEndElement(); // </analyzer>
     xml.writeEndElement(); // </fieldType>
     
-    // StandardTokenizer
+    // ClassicTokenizer
     xml.writeStartElement("fieldType");
     xml.writeAttribute("name", "text_std");
     xml.writeAttribute("class", "solr.TextField");
@@ -285,7 +285,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("replacement", " ");
     xml.writeEndElement(); // </charFilter>
     xml.writeStartElement("tokenizer");
-    xml.writeAttribute("class", "solr.StandardTokenizerFactory");
+    xml.writeAttribute("class", "solr.ClassicTokenizerFactory");
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
@@ -299,7 +299,7 @@ public class SolrSchemaXMLWriter extends AbstractXmlWriter {
     xml.writeAttribute("replacement", " ");
     xml.writeEndElement(); // </charFilter>
     xml.writeStartElement("tokenizer");
-    xml.writeAttribute("class", "solr.StandardTokenizerFactory");
+    xml.writeAttribute("class", "solr.ClassicTokenizerFactory");
     xml.writeEndElement(); // </tokenizer>
     xml.writeStartElement("filter");
     xml.writeAttribute("class", "solr.LowerCaseFilterFactory");
